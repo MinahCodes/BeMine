@@ -16,8 +16,6 @@ body {
     justify-content: center;
     align-items: center;
 }
-
-/* Paper texture overlay */
 body::before {
     content: "";
     position: fixed;
@@ -26,8 +24,6 @@ body::before {
     opacity: 0.25;
     pointer-events: none;
 }
-
-/* Floating background hearts */
 .heart-bg {
     position: absolute;
     font-size: 22px;
@@ -35,8 +31,6 @@ body::before {
     animation: floatUp 10s linear infinite;
 }
 @keyframes floatUp { from { transform: translateY(100vh); } to { transform: translateY(-10vh); } }
-
-/* Main poster card */
 .card {
     background: #fff0f6;
     padding: 50px 40px;
@@ -48,8 +42,6 @@ body::before {
     transition: box-shadow 0.3s ease;
 }
 .card:hover { box-shadow: 0 25px 60px rgba(255,105,180,0.45); }
-
-/* Tape corners */
 .card::before, .card::after {
     content: "";
     position: absolute;
@@ -60,14 +52,12 @@ body::before {
 }
 .card::before { left: -20px; transform: rotate(-8deg); }
 .card::after { right: -20px; transform: rotate(12deg); }
-
 h1 {
     font-family: 'Playfair Display', serif;
     color: #c9184a;
     font-size: 2rem;
     margin-bottom: 30px;
 }
-
 .btn {
     padding: 14px 28px;
     border-radius: 30px;
@@ -77,30 +67,15 @@ h1 {
     cursor: pointer;
     transition: all 0.3s ease;
 }
-
 #yesBtn { background: #ff4d6d; color: white; box-shadow: 0 0 15px #ff8fa3; }
 #yesBtn:hover { transform: scale(1.05); }
-#noBtn { position: absolute; background: white; color: #c9184a; border: 2px solid #ff8fa3; }
+#noBtn { position: absolute; background: white; color: #c9184a; border: 2px solid #ff8fa3; touch-action: none; }
 #musicBtn {
     position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
     width: 160px; font-size: 1rem; z-index: 100; background: #ff4d6d; color:white; box-shadow:0 0 15px #ff8fa3;
 }
 #musicBtn.playing { animation: pulse 1s infinite; }
-
-/* Floating hearts around music button */
-.music-heart {
-    position: absolute; font-size: 14px; opacity: 0.8; animation: musicHeartRise 2s forwards; pointer-events: none;
-}
-@keyframes musicHeartRise {
-    0% { transform: translate(0,0) scale(1); opacity:1; }
-    100% { transform: translate(calc(-50px + 100px*var(--randX)),-80px) scale(1.2); opacity:0; }
-}
-
 @keyframes pulse { 0%{transform:scale(1);}50%{transform:scale(1.1);}100%{transform:scale(1);} }
-
-/* Cursor sparkle trail */
-@keyframes fadeOut { to { transform: scale(2); opacity: 0; } }
-@keyframes shoot { to { transform: translateX(110vw) translateY(-100px); opacity: 0; } }
 </style>
 </head>
 <body>
@@ -125,24 +100,52 @@ setInterval(()=>{
     setTimeout(()=>h.remove(),10000);
 },1200);
 
-// Runaway NO button
-const noBtn=document.getElementById("noBtn");
-document.addEventListener("mousemove",e=>{
+// Runaway NO button (desktop + mobile)
+const noBtn = document.getElementById("noBtn");
+function moveNoBtn(x,y){
+    noBtn.style.left = Math.random()*(window.innerWidth-100)+"px";
+    noBtn.style.top = Math.random()*(window.innerHeight-50)+"px";
+}
+document.addEventListener("mousemove", e=>{
     const r=noBtn.getBoundingClientRect();
     if(Math.abs(e.clientX-(r.left+r.width/2))<80 && Math.abs(e.clientY-(r.top+r.height/2))<80){
-        noBtn.style.left=Math.random()*(window.innerWidth-100)+"px";
-        noBtn.style.top=Math.random()*(window.innerHeight-50)+"px";
+        moveNoBtn(e.clientX,e.clientY);
+    }
+});
+document.addEventListener("touchmove", e=>{
+    if(e.touches.length>0){
+        const touch = e.touches[0];
+        const r=noBtn.getBoundingClientRect();
+        if(Math.abs(touch.clientX-(r.left+r.width/2))<80 && Math.abs(touch.clientY-(r.top+r.height/2))<80){
+            moveNoBtn(touch.clientX,touch.clientY);
+        }
     }
 });
 
 // YES button
-document.getElementById("yesBtn").onclick=()=>{
+document.getElementById("yesBtn").onclick = ()=>{
     localStorage.setItem("musicOn", !bgMusic.paused);
-    setTimeout(()=>location.href="love.html",1200);
+    setTimeout(()=>location.href="love.html", 500);
+};
+
+// Music toggle for mobile-friendly
+const bgMusic = document.getElementById("bgMusic");
+const musicBtn = document.getElementById("musicBtn");
+function updateMusicBtn(){
+    if(!bgMusic.paused){ musicBtn.textContent = "🎵 Music On"; musicBtn.classList.add("playing"); }
+    else{ musicBtn.textContent = "🎵 Music Off"; musicBtn.classList.remove("playing"); }
+}
+let musicOn = localStorage.getItem("musicOn") === "true";
+if(musicOn){ document.body.addEventListener("click", ()=>{ bgMusic.play().catch(()=>{}); updateMusicBtn(); }, {once:true}); }
+
+musicBtn.onclick = () => {
+    if(bgMusic.paused){ bgMusic.play().catch(()=>{}); localStorage.setItem("musicOn", true); }
+    else{ bgMusic.pause(); localStorage.setItem("musicOn", false); }
+    updateMusicBtn();
 };
 
 // Shooting stars
-document.addEventListener("click",()=>{
+document.addEventListener("click", ()=>{
     const star=document.createElement("div");
     star.innerHTML="✨";
     star.style.position="fixed";
@@ -169,37 +172,6 @@ document.addEventListener("mousemove", e => {
     document.body.appendChild(spark);
     setTimeout(()=>spark.remove(),800);
 });
-
-// Music toggle
-const bgMusic=document.getElementById("bgMusic");
-const musicBtn=document.getElementById("musicBtn");
-
-function updateMusicBtn(){
-    if(!bgMusic.paused){ musicBtn.textContent="🎵 Music On"; musicBtn.classList.add("playing"); }
-    else { musicBtn.textContent="🎵 Music Off"; musicBtn.classList.remove("playing"); }
-}
-
-// Restore music state on page load
-if(localStorage.getItem("musicOn") === "true"){
-    bgMusic.play().catch(()=>{});
-    updateMusicBtn();
-}
-
-musicBtn.onclick = () => {
-    if(bgMusic.paused){ bgMusic.play().catch(()=>{}); }
-    else { bgMusic.pause(); }
-    updateMusicBtn();
-    localStorage.setItem("musicOn", !bgMusic.paused);
-};
-
-// Optional: autoplay music on first body tap (mobile)
-document.body.addEventListener("click", ()=>{
-    if(bgMusic.paused){
-        bgMusic.play().catch(()=>{});
-        updateMusicBtn();
-        localStorage.setItem("musicOn", true);
-    }
-}, {once:true});
 </script>
 </body>
 </html>
