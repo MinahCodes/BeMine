@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Our Memories 💞</title>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin:0;
+    min-height:100vh;
+    background: linear-gradient(135deg,#ffd6ec,#cdb4ff,#a2d2ff);
+    font-family:'Quicksand',sans-serif;
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    align-items:center;
+    gap:30px;
+    padding:40px;
+}
+
+/* Polaroid notes */
+.note {
+    width:180px;
+    height:180px;
+    background:white;
+    color:#ff4da6;
+    padding:15px;
+    border-radius:10px;
+    box-shadow:0 10px 20px rgba(0,0,0,0.2);
+    transform: rotate(var(--tilt));
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    font-weight:bold;
+    transition: transform 0.3s ease;
+}
+.note:hover {
+    transform: rotate(0deg) scale(1.1);
+}
+</style>
+</head>
+<body>
+
+<div class="note" style="--tilt:-8deg">Our first laugh together 💗</div>
+<div class="note" style="--tilt:6deg">Every late night talk 🌙</div>
+<div class="note" style="--tilt:-4deg">The way you smile at me 😊</div>
+<div class="note" style="--tilt:8deg">All our little inside jokes 🤭</div>
+<div class="note" style="--tilt:-6deg">Future adventures waiting ✈️</div>
+
+</body>
+</html>
