@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>For Boo Babe 💖</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Quicksand&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin:0;
+    height:100vh;
+    background: linear-gradient(135deg,#ffe5ec,#ffc2d1,#ffd6e8);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-family:'Quicksand',sans-serif;
+    overflow:hidden;
+}
+
+.letter {
+    background:white;
+    padding:40px;
+    width:80%;
+    max-width:600px;
+    border-radius:20px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.2);
+    position:relative;
+    animation:fadeIn 2s ease;
+}
+
+@keyframes fadeIn {
+    from{opacity:0; transform:translateY(30px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+h1 {
+    font-family:'Playfair Display',serif;
+    color:#c9184a;
+    text-align:center;
+}
+
+p {
+    color:#444;
+    line-height:1.6;
+    font-size:1.1rem;
+}
+
+button {
+    margin-top:20px;
+    padding:12px 24px;
+    border:none;
+    border-radius:25px;
+    background:#ff4d6d;
+    color:white;
+    cursor:pointer;
+    box-shadow:0 0 15px #ff8fa3;
+}
+</style>
+</head>
+<body>
+
+<div class="letter">
+    <h1>My Boo Babe 💌</h1>
+    <p id="text"></p>
+
+    <button onclick="location.href='memories.html'">Open Our Memories 💞</button>
+</div>
+
+<script>
+const message = `From the moment you came into my life, everything got softer, brighter, and way more meaningful.
+
+You make normal days feel special and hard days feel easier. Your laugh is literally my favorite sound, and your smile? Yeah… undefeated.
+
+Thank you for being you. For caring the way you do. For loving me the way you do.
+
+I can’t wait for more memories, more laughs, more late-night talks, and more Valentine’s Days together.
+
+Forever your person 💖`;
+
+let i = 0;
+function typeWriter(){
+    if(i < message.length){
+        document.getElementById("text").innerHTML += message.charAt(i);
+        i++;
+        setTimeout(typeWriter, 35);
+    }
+}
+typeWriter();
+</script>
+
+</body>
+</html>
