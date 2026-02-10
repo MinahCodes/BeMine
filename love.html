@@ -2,21 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>For Boo Babe 💖</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Quicksand&display=swap" rel="stylesheet">
-
 <style>
 body {
     margin:0;
     height:100vh;
     background: linear-gradient(135deg,#ffe5ec,#ffc2d1,#ffd6e8);
+    font-family:'Quicksand',sans-serif;
     display:flex;
     justify-content:center;
     align-items:center;
-    font-family:'Quicksand',sans-serif;
     overflow:hidden;
 }
-
 .letter {
     background:white;
     padding:40px;
@@ -27,24 +26,9 @@ body {
     position:relative;
     animation:fadeIn 2s ease;
 }
-
-@keyframes fadeIn {
-    from{opacity:0; transform:translateY(30px);}
-    to{opacity:1; transform:translateY(0);}
-}
-
-h1 {
-    font-family:'Playfair Display',serif;
-    color:#c9184a;
-    text-align:center;
-}
-
-p {
-    color:#444;
-    line-height:1.6;
-    font-size:1.1rem;
-}
-
+@keyframes fadeIn { from{opacity:0; transform:translateY(30px);} to{opacity:1; transform:translateY(0);} }
+h1 { font-family:'Playfair Display',serif; color:#c9184a; text-align:center; }
+p { color:#444; line-height:1.6; font-size:1.1rem; }
 button {
     margin-top:20px;
     padding:12px 24px;
@@ -55,6 +39,18 @@ button {
     cursor:pointer;
     box-shadow:0 0 15px #ff8fa3;
 }
+
+/* Hearts floating behind letter */
+.floating-heart {
+    position:absolute;
+    font-size:16px;
+    opacity:0.4;
+    animation:heartFloat 8s linear infinite;
+}
+@keyframes heartFloat {
+    0% { transform:translateY(100vh) rotate(0deg); }
+    100% { transform:translateY(-20vh) rotate(360deg); }
+}
 </style>
 </head>
 <body>
@@ -62,31 +58,64 @@ button {
 <div class="letter">
     <h1>My Boo Babe 💌</h1>
     <p id="text"></p>
-
     <button onclick="location.href='memories.html'">Open Our Memories 💞</button>
 </div>
 
+<audio id="bgMusic" src="music.mp3" loop></audio>
+<button id="musicBtn" class="btn" style="position: fixed; bottom: 20px; left:50%; transform: translateX(-50%); z-index:100;">🎵 Music</button>
+
 <script>
-const message = `From the moment you came into my life, everything got softer, brighter, and way more meaningful.
+// Floating hearts
+for(let i=0;i<12;i++){
+    const h=document.createElement('div');
+    h.className='floating-heart';
+    h.innerHTML='💗';
+    h.style.left=Math.random()*100+'vw';
+    h.style.fontSize=(12+Math.random()*12)+'px';
+    h.style.animationDuration=(6+Math.random()*4)+'s';
+    document.body.appendChild(h);
+}
 
-You make normal days feel special and hard days feel easier. Your laugh is literally my favorite sound, and your smile? Yeah… undefeated.
-
-Thank you for being you. For caring the way you do. For loving me the way you do.
-
-I can’t wait for more memories, more laughs, more late-night talks, and more Valentine’s Days together.
-
+// Typewriter text with hearts
+const message = `From the moment you came into my life, everything got softer, brighter, and way more meaningful. 💖
+You make normal days feel special and hard days feel easier. Your laugh is literally my favorite sound, and your smile? Yeah… undefeated. 💗
+Thank you for being you. For caring the way you do. For loving me the way you do. 💕
+I can’t wait for more memories, more laughs, more late-night talks, and more Valentine’s Days together. 💞
 Forever your person 💖`;
 
-let i = 0;
+let i=0;
 function typeWriter(){
-    if(i < message.length){
+    if(i<message.length){
         document.getElementById("text").innerHTML += message.charAt(i);
         i++;
         setTimeout(typeWriter, 35);
     }
 }
 typeWriter();
-</script>
 
+// Music persistence & toggle
+const bgMusic=document.getElementById('bgMusic');
+const musicBtn=document.getElementById('musicBtn');
+
+function updateMusicBtn(){
+    if(!bgMusic.paused){ musicBtn.textContent="🎵 Music On"; musicBtn.classList.add('playing'); }
+    else { musicBtn.textContent="🎵 Music Off"; musicBtn.classList.remove('playing'); }
+}
+
+// Restore state
+if(localStorage.getItem("musicOn")==="true"){ bgMusic.play().catch(()=>{}); updateMusicBtn(); }
+
+musicBtn.onclick=()=>{
+    if(bgMusic.paused){ bgMusic.play().catch(()=>{}); }
+    else{ bgMusic.pause(); }
+    updateMusicBtn();
+    localStorage.setItem("musicOn", !bgMusic.paused);
+};
+
+// Optional: autoplay on first tap for mobile
+document.body.addEventListener("click", ()=>{
+    if(bgMusic.paused){ bgMusic.play().catch(()=>{}); updateMusicBtn(); localStorage.setItem("musicOn", true);}
+}, {once:true});
+</script>
 </body>
 </html>
