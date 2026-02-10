@@ -84,6 +84,7 @@ h1 {
     margin: 10px;
     font-size: 1rem;
     cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 #yesBtn {
@@ -97,6 +98,19 @@ h1 {
     color: #c9184a;
     border: 2px solid #ff8fa3;
 }
+#musicBtn {
+    background: #ff4d6d;
+    color: white;
+    box-shadow: 0 0 15px #ff8fa3;
+}
+#musicBtn.playing {
+    animation: pulse 1s infinite;
+}
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
 
 /* Cursor sparkle */
 @keyframes fadeOut { to { transform: scale(2); opacity: 0; } }
@@ -109,6 +123,7 @@ h1 {
     <h1>Can I love you for another Valentine’s Day, Boo babe? 💌</h1>
     <button id="yesBtn" class="btn">YES 💖</button>
     <button id="noBtn" class="btn">No</button>
+    <button id="musicBtn" class="btn">🎵 Music Off</button>
 </div>
 
 <audio id="bgMusic" src="music.mp3" loop></audio>
@@ -134,8 +149,10 @@ document.addEventListener("mousemove",e=>{
     }
 });
 
-// Music
-document.body.addEventListener("click",()=>document.getElementById("bgMusic").play().catch(()=>{}),{once:true});
+// YES button
+document.getElementById("yesBtn").onclick=()=>{
+    setTimeout(()=>location.href="love.html",1200);
+};
 
 // Shooting stars
 document.addEventListener("click",()=>{
@@ -167,10 +184,30 @@ document.addEventListener("mousemove", e => {
     setTimeout(()=>spark.remove(),800);
 });
 
-// YES button
-document.getElementById("yesBtn").onclick=()=>{
-    setTimeout(()=>location.href="love.html",1200);
+// Music toggle
+const bgMusic = document.getElementById("bgMusic");
+const musicBtn = document.getElementById("musicBtn");
+
+musicBtn.onclick = () => {
+    if(bgMusic.paused){
+        bgMusic.play().catch(()=>{});
+        musicBtn.textContent = "🎵 Music On";
+        musicBtn.classList.add("playing");
+    } else {
+        bgMusic.pause();
+        musicBtn.textContent = "🎵 Music Off";
+        musicBtn.classList.remove("playing");
+    }
 };
+
+// Optional: autoplay music on first body click (mobile-friendly)
+document.body.addEventListener("click", ()=>{
+    if(bgMusic.paused){
+        bgMusic.play().catch(()=>{});
+        musicBtn.textContent = "🎵 Music On";
+        musicBtn.classList.add("playing");
+    }
+}, {once:true});
 </script>
 
 </body>
