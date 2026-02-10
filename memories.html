@@ -2,115 +2,119 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Our Memories 💞</title>
 <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet">
-
 <style>
 body {
-    margin:0;
-    min-height:100vh;
+    margin:0; min-height:100vh;
     font-family:'Quicksand',sans-serif;
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-    align-items:center;
-    gap:30px;
-    padding:40px;
+    display:flex; flex-wrap:wrap;
+    justify-content:center; align-items:center;
+    gap:30px; padding:40px;
     background: linear-gradient(135deg,#ffd6ec,#cdb4ff,#a2d2ff);
     background-size: 600% 600%;
     animation: gradientShift 20s ease infinite;
-    overflow: hidden;
+    overflow:hidden;
 }
 
-/* Animated gradient */
-@keyframes gradientShift {
-    0%{background-position:0% 50%;}
-    50%{background-position:100% 50%;}
-    100%{background-position:0% 50%;}
-}
+@keyframes gradientShift { 0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;} }
 
-/* Polaroid notes */
 .note {
-    width:180px;
-    height:180px;
-    background:white;
-    color:#ff4da6;
-    padding:15px;
-    border-radius:10px;
-    box-shadow:0 10px 20px rgba(0,0,0,0.2);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    text-align:center;
-    font-weight:bold;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor:pointer;
+    width:180px; height:180px; background:white; color:#ff4da6; padding:15px;
+    border-radius:10px; box-shadow:0 10px 20px rgba(0,0,0,0.2);
+    display:flex; justify-content:center; align-items:center; text-align:center;
+    font-weight:bold; transition: transform 0.3s ease, box-shadow 0.3s ease; cursor:pointer;
 }
+.note:hover { transform: rotate(0deg) scale(1.15); box-shadow:0 15px 30px rgba(255,105,180,0.4); }
+.note.active { transform: scale(1.3) rotate(0deg); z-index:10; box-shadow:0 25px 50px rgba(255,105,180,0.5); }
 
-/* Hover bounce/scale effect */
-.note:hover {
-    transform: rotate(0deg) scale(1.15);
-    box-shadow:0 15px 30px rgba(255,105,180,0.4);
-}
-
-/* Active note on click */
-.note.active {
-    transform: scale(1.3) rotate(0deg);
-    z-index: 10;
-    box-shadow:0 25px 50px rgba(255,105,180,0.5);
-}
-
-/* Floating hearts behind notes */
 .memory-heart {
-    position: absolute;
-    font-size: 12px;
-    opacity: 0.5;
-    animation: drift 8s linear infinite;
-    pointer-events: none;
+    position:absolute; font-size:14px; opacity:0.8; animation:heartPop 1s forwards; pointer-events:none;
 }
-@keyframes drift {
-    0% { transform: translate(0,0) rotate(0deg); opacity:0.6; }
-    50% { opacity:0.8; }
-    100% { transform: translate(50px,-120px) rotate(360deg); opacity:0; }
+@keyframes heartPop { 0%{transform:scale(0);opacity:1;}100%{transform:scale(1.5) translateY(-50px); opacity:0;} }
+
+.floating-heart {
+    position:absolute; font-size:16px; opacity:0.4; animation:heartFloat 8s linear infinite;
 }
+@keyframes heartFloat {0%{transform:translateY(100vh) rotate(0deg);}100%{transform:translateY(-20vh) rotate(360deg);}}
+
+.confetti {
+    position:absolute; width:6px; height:6px; background: #ff4da6; opacity:0.9; border-radius:50%; pointer-events:none;
+    animation: confettiFall 2s forwards;
+}
+@keyframes confettiFall {0%{transform:translateY(0) rotate(0deg);}100%{transform:translateY(80px) rotate(360deg); opacity:0;}}
+
 </style>
 </head>
 <body>
 
-<div class="note">Our first laugh together 💗</div>
-<div class="note">Every late night talk 🌙</div>
-<div class="note">The way you smile at me 😊</div>
-<div class="note">All our little inside jokes 🤭</div>
-<div class="note">Future adventures waiting ✈️</div>
+<div class="note" data-msg="Our first laugh together 💗">Our first laugh together 💗</div>
+<div class="note" data-msg="Every late night talk 🌙">Every late night talk 🌙</div>
+<div class="note" data-msg="The way you smile at me 😊">The way you smile at me 😊</div>
+<div class="note" data-msg="All our little inside jokes 🤭">All our little inside jokes 🤭</div>
+<div class="note" data-msg="Future adventures waiting ✈️">Future adventures waiting ✈️</div>
+
+<audio id="bgMusic" src="music.mp3" loop></audio>
+<button id="musicBtn" class="btn" style="position: fixed; bottom: 20px; left:50%; transform:translateX(-50%); z-index:100;">🎵 Music</button>
 
 <script>
 // Random tilt on load
 document.querySelectorAll('.note').forEach(note=>{
-    let rotate = (Math.random()*12)-6; // -6deg to 6deg
-    note.style.transform = `rotate(${rotate}deg)`;
+    let rotate = (Math.random()*12)-6;
+    note.style.transform=`rotate(${rotate}deg)`;
 });
 
-// Click to pop out card
+// Click sparkle & confetti & hidden message
 document.querySelectorAll('.note').forEach(note=>{
     note.addEventListener('click', ()=>{
         note.classList.toggle('active');
+        // Sparkle hearts
+        for(let i=0;i<6;i++){
+            const heart=document.createElement('div');
+            heart.className='memory-heart';
+            heart.innerHTML='💖';
+            heart.style.left=(note.offsetLeft + Math.random()*note.offsetWidth) + 'px';
+            heart.style.top=(note.offsetTop + Math.random()*note.offsetHeight) + 'px';
+            document.body.appendChild(heart);
+            setTimeout(()=>heart.remove(),1000);
+        }
+        // Confetti
+        for(let i=0;i<8;i++){
+            const conf=document.createElement('div');
+            conf.className='confetti';
+            conf.style.left=(note.offsetLeft + Math.random()*note.offsetWidth)+'px';
+            conf.style.top=(note.offsetTop + Math.random()*note.offsetHeight)+'px';
+            conf.style.background = ['#ff4da6','#ffb3ec','#ffd6e8','#fff0f6'][Math.floor(Math.random()*4)];
+            document.body.appendChild(conf);
+            setTimeout(()=>conf.remove(),2000);
+        }
     });
 });
 
-// Generate floating mini hearts
-for(let i=0;i<15;i++){
-    const heart=document.createElement("div");
-    heart.className="memory-heart";
-    heart.innerHTML="💖";
-    heart.style.left=Math.random()*window.innerWidth+"px";
-    heart.style.top=Math.random()*window.innerHeight+"px";
-    heart.style.animationDuration= (6 + Math.random()*4) + "s";
-    document.body.appendChild(heart);
-
-    // Slight repositioning for continuous drift
-    setInterval(()=>heart.style.top = Math.random()*window.innerHeight+"px", 8000);
+// Floating background hearts
+for(let i=0;i<12;i++){
+    const h=document.createElement('div');
+    h.className='floating-heart';
+    h.innerHTML='💗';
+    h.style.left=Math.random()*window.innerWidth+'px';
+    h.style.fontSize=(12+Math.random()*12)+'px';
+    h.style.animationDuration=(6+Math.random()*4)+'s';
+    document.body.appendChild(h);
 }
-</script>
 
+// Music toggle
+const bgMusic=document.getElementById('bgMusic');
+const musicBtn=document.getElementById('musicBtn');
+function updateMusicBtn(){ if(!bgMusic.paused){ musicBtn.textContent="🎵 Music On"; musicBtn.classList.add('playing'); } else { musicBtn.textContent="🎵 Music Off"; musicBtn.classList.remove('playing'); } }
+if(localStorage.getItem("musicOn")==="true"){ bgMusic.play().catch(()=>{}); updateMusicBtn(); }
+musicBtn.onclick=()=>{
+    if(bgMusic.paused){ bgMusic.play().catch(()=>{}); } else{ bgMusic.pause(); }
+    updateMusicBtn(); localStorage.setItem("musicOn",!bgMusic.paused);
+};
+document.body.addEventListener("click",()=>{
+    if(bgMusic.paused){ bgMusic.play().catch(()=>{}); updateMusicBtn(); localStorage.setItem("musicOn",true); }
+},{once:true});
+</script>
 </body>
 </html>
