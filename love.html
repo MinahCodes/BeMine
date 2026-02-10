@@ -28,7 +28,7 @@ body {
 }
 @keyframes fadeIn { from{opacity:0; transform:translateY(30px);} to{opacity:1; transform:translateY(0);} }
 h1 { font-family:'Playfair Display',serif; color:#c9184a; text-align:center; }
-p { color:#444; line-height:1.6; font-size:1.1rem; }
+p { color:#444; line-height:1.6; font-size:1.1rem; white-space:pre-wrap; }
 button {
     margin-top:20px;
     padding:12px 24px;
@@ -40,7 +40,7 @@ button {
     box-shadow:0 0 15px #ff8fa3;
 }
 
-/* Hearts floating behind letter */
+/* Floating hearts behind letter */
 .floating-heart {
     position:absolute;
     font-size:16px;
@@ -51,6 +51,15 @@ button {
     0% { transform:translateY(100vh) rotate(0deg); }
     100% { transform:translateY(-20vh) rotate(360deg); }
 }
+
+/* Music button */
+#musicBtn {
+    position: fixed; bottom: 20px; left:50%; transform: translateX(-50%);
+    width:160px; font-size:1rem; z-index:100; background:#ff4d6d; color:white;
+    box-shadow:0 0 15px #ff8fa3;
+}
+#musicBtn.playing { animation: pulse 1s infinite; }
+@keyframes pulse { 0%{transform:scale(1);}50%{transform:scale(1.1);}100%{transform:scale(1);} }
 </style>
 </head>
 <body>
@@ -62,27 +71,27 @@ button {
 </div>
 
 <audio id="bgMusic" src="music.mp3" loop></audio>
-<button id="musicBtn" class="btn" style="position: fixed; bottom: 20px; left:50%; transform: translateX(-50%); z-index:100;">🎵 Music</button>
+<button id="musicBtn">🎵 Music Off</button>
 
 <script>
-// Floating hearts
+// Floating hearts behind letter
 for(let i=0;i<12;i++){
     const h=document.createElement('div');
     h.className='floating-heart';
     h.innerHTML='💗';
-    h.style.left=Math.random()*100+'vw';
+    h.style.left=Math.random()*window.innerWidth+'px';
     h.style.fontSize=(12+Math.random()*12)+'px';
     h.style.animationDuration=(6+Math.random()*4)+'s';
     document.body.appendChild(h);
 }
 
-// Typewriter text with hearts
+// Typewriter with hearts
 const message = `From the moment you came into my life, everything got softer, brighter, and way more meaningful. 💖
-You make normal days feel special and hard days feel easier. Your laugh is literally my favorite sound, and your smile? My happy place. 💗
-Thank you for being you. For caring the way you do. For loving me the way you do. 💕
-I can’t wait for more memories, more laughs, more late night talks, and more Valentine’s Days together. 💞
-Forever your person 💖`;
+You make normal days feel special and hard days feel easier. Your laugh is  my favorite sound, and your smile? My happy place. 💗
 
+Thank you for being you. For caring the way you do. For loving me the way you do. 💕
+I can’t wait for more memories, more laughs, more late-night talks, and more Valentine’s Days together. 💞
+Forever your person 💖`;
 let i=0;
 function typeWriter(){
     if(i<message.length){
@@ -93,28 +102,28 @@ function typeWriter(){
 }
 typeWriter();
 
-// Music persistence & toggle
-const bgMusic=document.getElementById('bgMusic');
-const musicBtn=document.getElementById('musicBtn');
+// Mobile-friendly music toggle
+const bgMusic = document.getElementById("bgMusic");
+const musicBtn = document.getElementById("musicBtn");
 
 function updateMusicBtn(){
-    if(!bgMusic.paused){ musicBtn.textContent="🎵 Music On"; musicBtn.classList.add('playing'); }
-    else { musicBtn.textContent="🎵 Music Off"; musicBtn.classList.remove('playing'); }
+    if(!bgMusic.paused){ musicBtn.textContent = "🎵 Music On"; musicBtn.classList.add("playing"); }
+    else{ musicBtn.textContent = "🎵 Music Off"; musicBtn.classList.remove("playing"); }
 }
 
-// Restore state
-if(localStorage.getItem("musicOn")==="true"){ bgMusic.play().catch(()=>{}); updateMusicBtn(); }
+let musicOn = localStorage.getItem("musicOn")==="true";
+if(musicOn){
+    document.body.addEventListener("click", ()=>{ bgMusic.play().catch(()=>{}); updateMusicBtn(); }, {once:true});
+}
 
-musicBtn.onclick=()=>{
-    if(bgMusic.paused){ bgMusic.play().catch(()=>{}); }
-    else{ bgMusic.pause(); }
+musicBtn.addEventListener("click", ()=>{
+    if(bgMusic.paused){ bgMusic.play().catch(()=>{}); localStorage.setItem("musicOn", true); }
+    else{ bgMusic.pause(); localStorage.setItem("musicOn", false); }
     updateMusicBtn();
-    localStorage.setItem("musicOn", !bgMusic.paused);
-};
+});
 
-// Optional: autoplay on first tap for mobile
 document.body.addEventListener("click", ()=>{
-    if(bgMusic.paused){ bgMusic.play().catch(()=>{}); updateMusicBtn(); localStorage.setItem("musicOn", true);}
+    if(bgMusic.paused && musicOn){ bgMusic.play().catch(()=>{}); updateMusicBtn(); }
 }, {once:true});
 </script>
 </body>
